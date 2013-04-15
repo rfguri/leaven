@@ -10,7 +10,7 @@ DEPS := tads.h libs.h
 OBJS := leaven.o
 DEBUG := -g -pg
 NAME := leaven
-NAME_TAR := leaven_st20723_ls25838.tar
+NAME_TAR := g1_st20723_ls25838.tar
 
 # All Target
 all: $(NAME)
