@@ -107,8 +107,8 @@ void print_fat_info (filesystem_FAT fat_info) {
 
 void save_ext2 (int fd, filesystem_EXT2 *ext2_info) {
 
-	int n, i, superblock = 1024;
-	char tmp[4];
+	int superblock = 1024;
+	char tmp[16];
 	time_t clk;
 
 	strcpy((*ext2_info).filesystem, "EXT2");
@@ -162,24 +162,14 @@ void save_ext2 (int fd, filesystem_EXT2 *ext2_info) {
 	lseek (fd, 36 + superblock, SEEK_SET);
 	read (fd, &(*ext2_info).frags_group, 4);
 
-	// Get label
+	// Get volume name
 	lseek (fd, 120 + superblock, SEEK_SET);
-	n = read (fd, tmp, 16);
-
-	// Get rid of innecessary characters
-	for (i = 0; i < n; i++) {
-		if (tmp[i] == ' '){
-			tmp[i] = '\0';
-			strcpy((*ext2_info).volume_name, tmp);
-			i = n;
-		}
-		strcpy((*ext2_info).volume_name, tmp);
-	}
+	read (fd, tmp, 16);
+	(*ext2_info).volume_name = strdup(tmp);
 
 	// Get last check
 	lseek (fd, 64 + superblock, SEEK_SET);
 	read (fd, &clk, 4);
-
 	(*ext2_info).last_check = strdup(ctime(&clk));
 
 	// Get last mount
@@ -197,34 +187,17 @@ void save_ext2 (int fd, filesystem_EXT2 *ext2_info) {
 void save_fat (int fd, filesystem_FAT *fat_info) {
 
 	int n, i;
-	char tmp[8];
+	char tmp[8], tmp2[11];
 
 	// Get file system
 	lseek (fd, 54, SEEK_SET);
-	n = read (fd, tmp, 8);
-
-	// Get rid of innecessary characters
-	for (i = 0; i < n; i++) {
-		if (tmp[i] == ' '){
-			tmp[i] = '\0';
-			strcpy((*fat_info).filesystem, tmp);
-			i = n;
-		}
-	}
+	read (fd, tmp, 8);
+	(*fat_info).filesystem = strdup(tmp);
 
 	// Get system name
 	lseek (fd, 3, SEEK_SET);
 	n = read (fd, tmp, 8);
-
-	// Get rid of innecessary characters
-	for (i = 0; i < n; i++) {
-		if (tmp[i] == ' '){
-			tmp[i] = '\0';
-			strcpy((*fat_info).system_name, tmp);
-			i = n;
-		}
-		strcpy((*fat_info).system_name, tmp);
-	}
+	(*fat_info).system_name = strdup(tmp);
 
 	// Get sector size
 	lseek (fd, 11, SEEK_SET);
@@ -252,16 +225,17 @@ void save_fat (int fd, filesystem_FAT *fat_info) {
 
 	// Get label
 	lseek (fd, 43, SEEK_SET);
-	n = read (fd, tmp, 11);
+	n = read (fd, tmp2, 11);
 
 	// Get rid of innecessary characters
 	for (i = 0; i < n; i++) {
-		if (tmp[i] == ' '){
-			tmp[i] = '\0';
-			strcpy((*fat_info).label, tmp);
+		if (tmp2[i] == ' '){
+			tmp2[i] = '\0';
+			(*fat_info).label = strdup(tmp2);
 			i = n;
+		} else if (i == n-1) {
+			(*fat_info).system_name = strdup(tmp2);
 		}
-		strcpy((*fat_info).label, tmp);
 	}
 
 }
@@ -355,6 +329,32 @@ int main ( int argc, char **argv ) {
 	    		break;
 	    		case 2:
 					print_ext2_info (ext2_info);
+	    		break;
+	    	}
+
+    	} else if (strcmp(argv[1], "/dir") == 0) {
+    	
+    		filesystem_FAT fat_info;
+    		filesystem_EXT2 ext2_info;
+
+	    	int type = read_file (argv, &fat_info, &ext2_info);
+	    	int fat_region_init_addr;
+	    	int root_dir_init_addr;
+	    	char aux[100];
+
+	    	switch (type) {
+	    		case 1:
+					fat_region_init_addr = (fat_info).fats_number * (fat_info).fat_sectors * (fat_info).sector_size;
+					root_dir_init_addr = ((fat_info).reserved_sectors * (fat_info).sector_size) + fat_region_init_addr;
+					sprintf(aux, "Fat Region: %d\n", fat_region_init_addr);
+					write (1, aux, strlen(aux));
+					sprintf(aux, "Root Directory Region: %d\n", root_dir_init_addr);
+					write (1, aux, strlen(aux));
+					//print_fat_info (fat_info);
+	    		break;
+	    		case 2:
+
+					//print_ext2_info (ext2_info);
 	    		break;
 	    	}
 

@@ -10,14 +10,13 @@ DEPS := tads.h libs.h
 OBJS := leaven.o
 DEBUG := -g -pg
 NAME := leaven
-NAME_TAR := g1_st20723_ls25838.tar
+NAME_TAR := g1_leaven_st20723_ls25838.tar
 
 # All Target
 all: $(NAME)
 
 # Tool invocations
 $(NAME): $(OBJS)
-	@echo ' '
 	@echo 'Building target: $@'
 	$(CC)  -o $(NAME) $(OBJS) $(LIBS) $(LFLAGS)
 	@echo 'Finished building target: $@'

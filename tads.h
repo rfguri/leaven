@@ -1,14 +1,14 @@
 typedef struct FAT {
 
-	char filesystem[8];
-	char system_name[8];
+	char *filesystem;
+	char *system_name;
 	unsigned short sector_size;
 	unsigned char cluster_sectors;
 	unsigned short reserved_sectors;
 	unsigned char fats_number;
 	unsigned short max_root_entries;
 	unsigned short fat_sectors;
-	char label[11];
+	char *label;
 
 } filesystem_FAT;
 
@@ -27,7 +27,7 @@ typedef struct EXT2 {
 	unsigned int first_block;
 	unsigned int block_group;
 	unsigned int frags_group;
-	char volume_name[16];
+	char *volume_name;
 	char *last_check;
 	char *last_mount;
 	char *last_write;
