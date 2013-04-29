@@ -1,15 +1,15 @@
-typedef struct FAT {
+typedef struct FAT_vol {
 
 	char *filesystem;
 	char *system_name;
 	unsigned short sector_size;
 	unsigned char cluster_sectors;
 	unsigned short reserved_sectors;
-	unsigned char fats_number;
+	unsigned char fat_number;
 	unsigned short max_root_entries;
 	unsigned short fat_sectors;
 	char *label;
-
+	
 } filesystem_FAT;
 
 typedef struct EXT2 {
@@ -33,3 +33,12 @@ typedef struct EXT2 {
 	char *last_write;
 
 } filesystem_EXT2;
+
+typedef struct FAT_dir {
+
+	char *filename;
+	char *extension;
+	char attr;
+	unsigned int size;
+
+} dir_FAT;
