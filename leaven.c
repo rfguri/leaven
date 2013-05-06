@@ -43,7 +43,7 @@ int check_filesystem (int fd, filesystem_FAT *fat_info, filesystem_EXT2 *ext2_in
 		} else {
 
 			write (1, "Error. Volum no formatat en FAT16 ni EXT2.\n", strlen("Error. Volum no formatat en FAT16 ni EXT2.\n"));
-		
+
 		}
 
 	}
@@ -55,11 +55,11 @@ int check_filesystem (int fd, filesystem_FAT *fat_info, filesystem_EXT2 *ext2_in
 int read_file (char **argv, int *fd, filesystem_FAT *fat_info, filesystem_EXT2 *ext2_info) {
 
     if ((*fd = open (argv[2], O_RDONLY)) < 0) {
-    	
+
     	write (1, "Error. Volum no trobat.\n", strlen("Error. Volum no trobat.\n"));
-    	
+
     	return (0);
-    
+
     } else {
 
 		return (check_filesystem(*fd, &(*fat_info), &(*ext2_info)));
@@ -70,9 +70,9 @@ int read_file (char **argv, int *fd, filesystem_FAT *fat_info, filesystem_EXT2 *
 int main ( int argc, char **argv ) {
 
 	if ( argc != 3 ) {
-	
+
 		write (1, "Error. Nombre de paràmetres incorrecte.\n", strlen("Error. Nombre de paràmetres incorrecte.\n"));
-    
+
     } else {
 
     	int fd;
@@ -94,16 +94,20 @@ int main ( int argc, char **argv ) {
 	    	}
 
     	} else if (strcmp(argv[1], "/dir") == 0) {
-    	
-			dir_FAT *dir_fat = (dir_FAT *) malloc (sizeof(dir_FAT) * fat_info.max_root_entries);
+
 
 	    	int type = read_file (argv, &fd, &fat_info, &ext2_info);
 
 	    	int reserved_region, fat_region, root_dir_init_addr;
 
+	    	dir_FAT *dir_fat = (dir_FAT *) malloc (sizeof(dir_FAT) * fat_info.max_root_entries);
+
+	    	dir_EXT2 dir_ext2;
+			group_EXT2 group_ext2;
+
 	    	switch (type) {
 	    		case 1:
-					
+
 					reserved_region = fat_info.reserved_sectors * fat_info.sector_size;
 					fat_region = fat_info.fat_number * fat_info.fat_sectors * fat_info.sector_size;
 					root_dir_init_addr = reserved_region + fat_region;
@@ -114,6 +118,8 @@ int main ( int argc, char **argv ) {
 
 	    		break;
 	    		case 2:
+
+					get_ext2_dir_info (fd, &dir_ext2, &group_ext2, ext2_info);
 
 	    		break;
 	    	}
