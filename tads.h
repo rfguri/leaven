@@ -9,7 +9,7 @@ typedef struct FAT_vol {
 	unsigned short max_root_entries;
 	unsigned short fat_sectors;
 	char *label;
-	
+
 } filesystem_FAT;
 
 typedef struct EXT2 {
@@ -42,3 +42,48 @@ typedef struct FAT_dir {
 	unsigned int size;
 
 } dir_FAT;
+
+typedef struct EXT2_inode {
+
+	unsigned short i_mode;
+	unsigned short i_uid;
+	unsigned int i_size;
+	unsigned int i_atime;
+	unsigned int i_ctime;
+	unsigned int i_mtime;
+	unsigned int i_dtime;
+	unsigned short i_gid;
+	unsigned short i_links_count;
+	unsigned int i_blocks;
+	unsigned int i_flags;
+	unsigned int i_osdl;
+	unsigned int i_block_pointer[15];
+	unsigned int i_generation;
+	unsigned int i_file_acl;
+	unsigned int i_dir_acl;
+	unsigned int i_faddr;
+	double i_osd2;
+
+} inode_EXT2;
+
+typedef struct EXT2_dir {
+
+	unsigned int num_inode;
+	unsigned short register_length;
+	char name_length;
+	char file_type;
+	char *name;
+	unsigned int file_size;
+
+} dir_EXT2;
+
+typedef struct EXT2_group {
+
+	unsigned int init_block_bitmap;
+	unsigned int init_inode_bitmap;
+	unsigned int init_inode_table;
+	unsigned short free_blocks;
+	unsigned short free_inodes;
+	unsigned short used_dirs;
+
+} group_EXT2;
